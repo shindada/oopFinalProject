@@ -8,7 +8,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-int MODE = 1;
+static int MODE = 1;
 struct Pos {
 	int col;
 	int row;
@@ -91,7 +91,7 @@ public://設public僅我因為比較好丟資料//記得要改喔
 	std::vector <MonsterPLace> deploy;
 	//void setBoard();//註解掉僅我因為比較好丟資料//記得要改喔
 };
-Pos direction(char turn) {
+static Pos direction(char turn) {
 	Pos position;
 	position.col = 0;
 	position.row = 0;
