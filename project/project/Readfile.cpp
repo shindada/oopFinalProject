@@ -5,10 +5,10 @@ void preInput() {
 	ifstream ifs(filename);
 	if (!ifs) cout << "Fail to open the file.";
 	else {
-		int characterNum;
-		ifs >> characterNum;
-		CharacterList = new CharacterData[characterNum];
-		for (int i = 0; i < characterNum; i++) {
+		//int characterNum;
+		ifs >> characterType;
+		CharacterList = new CharacterData[characterType];
+		for (int i = 0; i < characterType; i++) {
 			ifs >> CharacterList[i].name >> CharacterList[i].hp >>
 				CharacterList[i].cardNum >> CharacterList[i].totalcard;
 			for (int j = 0; j < CharacterList[i].totalcard; j++) {
@@ -65,21 +65,55 @@ void preInput() {
 				}
 			} while (ifs >> name);
 		}
-		//for (int i = 0; i < monsterNum; i++) {
-		//	cout << MonsterList[i].name << ' ' << MonsterList[i].normal[0] << ' '
-		//		<< MonsterList[i].normal[1] << ' ' << MonsterList[i].normal[2] << ' '
-		//		<< MonsterList[i].elite[0] << ' ' << MonsterList[i].elite[1] << ' '
-		//		<< MonsterList[i].elite[2] << endl;
-		//	for (int j = 0; j < MonsterList[i].card.size(); j++) {
-		//		cout << MonsterList[i].card[j].numero << ' '
-		//			<< MonsterList[i].card[j].dexterity << ' '
-		//			<< MonsterList[i].card[j].skill << ' '
-		//			<< MonsterList[i].card[j].canShuffle << ' '
-		//			<< MonsterList[i].card[j].cardStatus << endl;
-		//	}
-		//}
+		for (int i = 0; i < monsterNum; i++) {
+			cout << MonsterList[i].name << ' ' << MonsterList[i].normal[0] << ' '
+				<< MonsterList[i].normal[1] << ' ' << MonsterList[i].normal[2] << ' '
+				<< MonsterList[i].elite[0] << ' ' << MonsterList[i].elite[1] << ' '
+				<< MonsterList[i].elite[2] << endl;
+			for (int j = 0; j < MonsterList[i].card.size(); j++) {
+				cout << MonsterList[i].card[j].numero << ' '
+					<< MonsterList[i].card[j].dexterity << ' '
+					<< MonsterList[i].card[j].skill << ' '
+					<< MonsterList[i].card[j].canShuffle << ' '
+					<< MonsterList[i].card[j].cardStatus << endl;
+			}
+		}
 	}
 	ifs.close();
 	cin >> MODE;
 }
-
+void setUpBoard() {
+	string filename; cin >> filename;
+	ifstream ifs(filename);
+	if (!ifs) cout << "Fail to open the file.";
+	else {
+		struct Board map;
+		int row; int col;
+		ifs >> row >> col; // read in row and column
+		map.initBoard = new int*[row]; // allocate space for map
+		for (int i = 0; i < row; i++) {
+			map.initBoard[i] = new int[col];
+		}
+		for (int i = 0; i < row; i++) { // store map in initBoard
+			for (int j = 0; j < col; j++) {
+				ifs >> map.initBoard[i][j];
+			}
+		}
+		for (int i = 0; i < 4; i++) { // store 4 spawns of character 
+			for (int j = 1; j >= 0; j--) {
+				ifs >> map.spawn[i][j];
+			}
+		}
+		int monsterNum = 0; ifs >> monsterNum; // number of monsters in the map
+		for (int i = 0; i < monsterNum; i++) { // store monsters' deploy
+			struct MonsterPlace temp;
+			ifs >> temp.name >> temp.place.col >> temp.place.row;
+			int peoTemp[3];
+			ifs >> peoTemp[0] >> peoTemp[1] >> peoTemp[2];
+			if (characterNum == 2) temp.peoNum = peoTemp[0]; // Remi: chaNum要改名稱
+			else if (characterNum == 3) temp.peoNum = peoTemp[1];
+			else temp.peoNum = peoTemp[2];
+			map.deploy.push_back(temp);
+		}
+	}
+}

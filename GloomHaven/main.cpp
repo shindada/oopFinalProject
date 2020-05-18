@@ -14,7 +14,8 @@ int main() {
 		}
 		for (int i = 0; i < characternum; i++) {
 			std::string name, holdcard;
-			
+			//for(int i=0;i<)
+			//if()
 		}
 		//setupBoard();
 	}
