@@ -32,7 +32,6 @@ int main() {
 			Character *role = new Character[characterNum];
 			iniCharacter(role);//initiale role
 			//initiale role end
-			
 
 			setUpBoard();//read map
 
@@ -41,15 +40,17 @@ int main() {
 			findRoom(1, door);//findRoom
 
 			//initiale monster
-			//std::cout << map.deploy.size() << ' ' << characterType << std::endl;
-			Monster *enemy = new Monster[map.deploy.size()];
-			iniMonster(enemy, map.deploy.size());//initiale monster end
+				//std::cout << map.deploy.size() << ' ' << characterType << std::endl;
+			Monster *enemy = new Monster[monsterNum];
+			iniMonster(enemy, monsterNum);//initiale monster end
 			//initiale monster end
 
 			//set role spawn location
-			for (int i = 0; i < map.spawn.size(); i++) {
+			//check
+			/*for (int i = 0; i < map.spawn.size(); i++) {
 				std::cout << map.spawn[i].row << ' ' << map.spawn[i].col << " - ";
-			}
+			}*/
+			//check
 			std::cout << std::endl;
 			outputGamerBoard();
 			for (int i = 0; i < characterNum; i++) {
@@ -62,7 +63,46 @@ int main() {
 				outputGamerBoard();
 			}
 			//set role spawn location end
+			//game play
+			//character
+			std::vector <std::string> judge;
+			int charCount = 0;
+			while (charCount < characterNum) {
+				std::string line;
+				std::cin.ignore();
+				std::getline(std::cin, line);
+				judge.push_back(line);
+				std::stringstream lineTemp(line);
+				char name;
+				lineTemp >> name;
+				lineTemp >> line;
+				for (int i = 0; i < characterNum; i++) {
+					if ((name == role[i].getName)) {
+						if (line == "check") {
+							role[i].getHoldCard();
 
+						}
+						else if ((line == "-1") && (role[i].nowTurn)) {
+							role[i].rest();
+							if ((role[i].alive)||(!role[i].nowTurn)) {
+								charCount++;
+							}
+						}
+						else if (role[i].nowTurn) {//draw
+							
+							int fTemp, lTemp;
+							lineTemp >> fTemp >> lTemp;
+							role[i].draw(fTemp, lTemp);
+							if ((role[i].alive) || (!role[i].nowTurn)) {
+								charCount++;
+							}
+						}
+					}
+				}
+			}
+			for (int i = 0; i < characterNum; i++) {
+				enemy[i].draw();
+			}
 			//role draw
 			/*for (int i = 0; i < 2; i++) {
 				role[0].move(i+1);

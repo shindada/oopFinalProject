@@ -126,6 +126,7 @@
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Creature.cpp" />
     <ClCompile Include="Board.cpp" />
+    <ClCompile Include="Func.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="Readfile.cpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="Character.h" />
     <ClInclude Include="Creature.h" />
     <ClInclude Include="Board.h" />
+    <ClInclude Include="Func.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="Readfile.h" />
   </ItemGroup>

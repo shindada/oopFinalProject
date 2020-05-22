@@ -6,14 +6,15 @@
 //Problem statement: Creature Class
 #include "Readfile.h"
 class Creature {
-public:
+private:
 	int totalHp;
 	int hp;
 	int shield;
 	Position position;
 public:
+	bool nowTurn;
 	bool alive;
-	int dexterity;
+	int dexterity[2];
 	//void move(std::string commandTemp);
 	void initialHp(const int& hpTemp);
 	void setPostion(const Position& posTemp);

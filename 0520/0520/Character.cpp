@@ -1,4 +1,5 @@
 ﻿#include "Character.h"
+
 char Character::Halpha = 'A';
 Character::Character(void) {//OK
 	name = Halpha;
@@ -11,6 +12,9 @@ void Character::initial(const CharacterData& chaDataTemp) {//OK
 	Creature::shieldToZero();
 	Creature::dexterityToZero();
 	holdCard.clear();
+	command.clear();
+	point.clear();
+
 	for (int i = 0; i < chaDataTemp.totalcard; i++) {
 		holdCard.push_back(chaDataTemp.card[i]);
 	}
@@ -30,6 +34,10 @@ void Character::initial(const CharacterData& chaDataTemp) {//OK
 	}*/
 	//check end
 }
+void Character::die(void) {
+
+}
+
 const char& Character::getName(void) {//OK
 	return this->name;
 }
@@ -75,78 +83,102 @@ void Character::getHoldCard(void) {//OK
 	hand.clear();
 	discard.clear();
 }
-void Character::draw() {//抽牌//OK
-	std::cout << name << "'s turn: ";
-	int chooseCardInt[2];
-	int countTemp = 0;
-	bool flag;
-	do {
-		flag = true;
-		if (countTemp > 0) {
-			std::cout << "card discard, please enter other numero:";
+void Character::draw(int first, int last) {//抽牌//OK
+	int cardRemain = 0;
+	int cardDiscard = 0;
+	for (int i = 0; i < holdCard.size(); i++) {
+		if (holdCard[i].cardStatus == 0) {
+			cardRemain++;
 		}
-		else {
-			countTemp = 1;
+		else if (holdCard[i].cardStatus == 1) {
+			cardDiscard++;
 		}
-		std::cin >> chooseCardInt[0] >> chooseCardInt[1];
-		if ((chooseCardInt[0] < holdCard.size()) && (chooseCardInt[1] < holdCard.size())) {
-			if ((holdCard[chooseCardInt[0]].cardStatus != 0)
-				|| (holdCard[chooseCardInt[1]].cardStatus != 0)
-				|| (chooseCardInt[0] == chooseCardInt[1])) {
-				flag = false;
-			}
-		}
-		else {
-			flag = false;
-		}
-	} while (flag == false);
-	while ((holdCard[chooseCardInt[0]].cardStatus != 0) || (holdCard[chooseCardInt[1]].cardStatus != 0)
-		|| (chooseCardInt[0] == chooseCardInt[1])) {
-		std::cout << "card discard, please enter other numero:";
-		std::cin >> chooseCardInt[0] >> chooseCardInt[1];
 	}
-	int partInt, otherInt;
-	char partChar;
-	std::cin >> partInt >> partChar;
-	if (partInt == chooseCardInt[0]) {
-		otherInt = chooseCardInt[1];
+	if (cardRemain < 2) {
+		if (cardDiscard < 2) {
+			this->alive = false;
+		}
+		else {
+			std::cout << "card are not enough, need to rest!" << std::endl;
+		}
 	}
 	else {
-		otherInt = chooseCardInt[0];
-	}
-	if (partChar == 'd') {
-		int swap = otherInt;
-		otherInt = partInt;
-		partInt = swap;
-	}
-	std::stringstream chooseCard[2];
-	chooseCard[0] << holdCard[partInt].topHalf;
-	chooseCard[1] << holdCard[otherInt].lowHalf;
-	holdCard[partInt].cardStatus = 1;
-	holdCard[otherInt].cardStatus = 1;
-	std::vector <std::string> command;
-	std::vector <int> point;
-	std::string cTemp;
-	int pTemp;
-	for (int i = 0; i < 2; i++) {
-		while (chooseCard[i] >> cTemp >> pTemp) {
-			command.push_back(cTemp);
-			point.push_back(pTemp);
+		nowTurn = false;
+		int countTemp = 0;
+		bool flag;
+		do {
+			flag = true;
+			if (countTemp > 0) {
+				std::cout << "card discard, please enter other numero:";
+			}
+			else {
+				countTemp = 1;
+			}
+			if ((first < holdCard.size()) && (last < holdCard.size())) {
+				if ((holdCard[first].cardStatus != 0)
+					|| (holdCard[last].cardStatus != 0)
+					|| (first == last)) {
+					flag = false;
+				}
+			}
+			else {
+				flag = false;
+			}
+		} while (flag == false);
+		while ((holdCard[first].cardStatus != 0) || (holdCard[last].cardStatus != 0)
+			|| (first == last)) {
+			std::cout << "card discard, please enter other numero:";
+			std::cin >> first >> last;
 		}
+		dexterity[0] = holdCard[first].dexterity;
+		dexterity[1] = holdCard[last].dexterity;
+		int partInt, otherInt;
+		char partChar;
+		std::stringstream chooseCard[2];
+		std::cin >> partInt >> partChar;
+		if (partInt == first) {
+			otherInt = last;
+		}
+		else {
+			otherInt = first;
+		}
+		if (partChar == 'd') {
+			chooseCard[0] << holdCard[partInt].lowHalf;
+			chooseCard[1] << holdCard[otherInt].topHalf;
+		}
+		else {
+			chooseCard[0] << holdCard[partInt].topHalf;
+			chooseCard[1] << holdCard[otherInt].lowHalf;
+		}
+		holdCard[partInt].cardStatus = 1;
+		holdCard[otherInt].cardStatus = 1;
+		std::string cTemp;
+		int pTemp;
+		for (int i = 0; i < 2; i++) {
+			while (chooseCard[i] >> cTemp >> pTemp) {
+				command.push_back(cTemp);
+				point.push_back(pTemp);
+			}
+		}
+	}
+}
+void Character::turn(Monster *enemy) {//出牌
+	std::cout << name << "'s turn: ";
+	for (int i = 0; i < 2; i++) {
 		int count = 0;
 		while (count < command.size()) {
 			if (command[count] == "attack") {
 				if (count + 1 < command.size()) {
 					if (command[count + 1] == "range") {
-						attack(point[count], point[count + 1]);
+						attack(point[count], point[count + 1], enemy);
 						count++;
 					}
 					else {
-						attack(point[count]);
+						attack(point[count], 1, enemy);
 					}
 				}
 				else {
-					attack(point[count]);
+					attack(point[count], 1, enemy);
 				}
 			}
 			else if (command[count] == "shield") {
@@ -160,16 +192,38 @@ void Character::draw() {//抽牌//OK
 			}
 			count++;
 		}
-		command.clear();
-		point.clear();
 	}
+	command.clear();
+	point.clear();
 }
-int Character::attack(int atkTemp) {
-	std::cout << "attack: " << atkTemp << std::endl;
-	return atkTemp;
-}
-int Character::attack(int atkTemp, int rangeTemp) {
-	std::cout << "attack, range: " << atkTemp << ' ' << rangeTemp << std::endl;
+
+int Character::attack(int atkTemp, int rangeTemp, Monster *enemy) {
+	// std::cout << "attack, range: " << atkTemp << ' ' << rangeTemp << std::endl;
+	char target;
+	bool isFind = false; 
+	do {
+		cin >> target;
+		if (isupper(target) == true) { // can't attack its friend
+			cout << "error target!!!" << endl;
+			continue;
+		}
+		for (int i = 0; i < monsterNum; i++) {
+			if (target == enemy[i].name) {
+				isFind = true;
+				if (inRange() && canSee()) {//紅字
+					int atkReal = atkTemp - enemy[i].shield;
+					if (atkReal < 0) atkReal = 0;
+					enemy[i].hp = enemy[i].hp - atkTemp + enemy[i].shield;
+				}
+				else {
+					isFind = false; // can't see or reach the target
+			        break;
+				}
+			}
+		}
+		if (isFind == false) cout << "error target!!!" << endl; // invalid monster name
+	} while(isFind == false);
+
 	return atkTemp;
 	return 0;
 }
@@ -306,13 +360,14 @@ void Character::move(int step) {//OK
 }
 void Character::shuffle() {//洗牌//OK
 	std::cout << "shuffle" << std::endl;
-	bool flagCanShuffle = false;
+	int flagCanShuffle = 0;
 	for (int i = 0; i < holdCard.size(); i++) {
 		if (holdCard[i].cardStatus == 1) {//dicard zone is not empty
-			flagCanShuffle = true;
+			flagCanShuffle++;
 		}
 	}
-	if (flagCanShuffle) {//dicard zone is not empty
+	if (flagCanShuffle >= 2) {//dicard zone is not empty
+		nowTurn = false;
 		std::cout << "remove card: ";
 		int choose;
 		int countTemp = 0;
@@ -342,6 +397,7 @@ void Character::shuffle() {//洗牌//OK
 				holdCard[i].cardStatus = 0;
 			}
 		}
+		this->dexterity[0] = this->dexterity[1] = 99;
 	}
 	else {//dicard zone is empty
 		std::cout << "no card in dicard zone, can't shuffle" << std::endl;
@@ -350,4 +406,9 @@ void Character::shuffle() {//洗牌//OK
 void Character::rest() {//OK
 	Creature::heal(2);
 	shuffle();
+}
+
+void Character::check() {
+	// A-hp: 12, shield: 1
+	cout << name << "-hp: " << hp << ", shield: " << shield << endl;
 }

@@ -69,6 +69,7 @@ void setUpBoard();
 extern int characterType;//角色種類
 extern int monsterType;
 extern int characterNum;//遊戲角色個數
+extern int monsterNum;
 extern int MODE;
 extern CharacterData* CharacterList;
 extern MonsterData* MonsterList;

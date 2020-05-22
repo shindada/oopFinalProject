@@ -4,9 +4,11 @@ Monster::Monster(void) {//OK
 	name = Malpha;
 	Malpha++;
 	this->alive = true;
+	isVisible = true;
 	drawCount = 0;
 }
 void Monster::initial(const MonsterData& monstDataTemp, const MonsterPlace& monstPlaceTemp, const int &gameModeTemp) {//OK
+	isVisible = true;
 	Creature::shieldToZero();
 	Creature::dexterityToZero();
 	chooseCard = 0;
@@ -17,6 +19,7 @@ void Monster::initial(const MonsterData& monstDataTemp, const MonsterPlace& mons
 	if (monstPlaceTemp.peoNum == 0) {
 		Creature::initialHp(0);
 		this->alive = false;
+		isVisible = false;
 		status[0] = status[1] = status[2] = 0;
 		temp.col = temp.row = -1;
 	}
@@ -67,6 +70,9 @@ void Monster::visible(void) {//OK
 		if ((board[temp.row][temp.col] == '1') && (this->alive)) {
 			board[temp.row][temp.col] = name;
 		}
+		else {
+			isVisible = false;
+		}
 	}
 }
 void Monster::initialMalpha(void) {
@@ -89,8 +95,10 @@ void Monster::draw() {//抽牌//OK
 			}
 		}
 	}
+	this->dexterity[0] = holdCard[chooseCard].dexterity;
+	this->dexterity[1] = 99;
 }
-void Monster::turn() {//OK
+void Monster::turn(Character *role) {//OK
 	std::cout << name << "'s turn: " << std::endl;
 	std::stringstream chooseCardSStr;
 	chooseCardSStr << holdCard[chooseCard].skill;
@@ -221,4 +229,9 @@ void Monster::shuffle() {//洗牌//OK
 		}
 		chooseCard++;
 	}
+}
+
+void Monster::check() {
+	// A-hp: 12, shield: 1
+	cout << name << "-hp: " << hp << ", shield: " << shield << endl;
 }

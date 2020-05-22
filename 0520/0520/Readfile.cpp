@@ -3,6 +3,7 @@
 
 int characterType;//角色種類
 int monsterType;
+int monsterNum;
 int MODE;
 Board map;
 CharacterData* CharacterList;
@@ -148,7 +149,7 @@ void setUpBoard() {//read Map Data
 		//set spawn end
 
 		//set monsterplace
-		int monsterNum = 0;
+		monsterNum = 0;
 		ifs >> monsterNum; // number of monsters in the map
 		for (int i = 0; i < monsterNum; i++) { // store monsters' deploy
 			struct MonsterPlace temp;

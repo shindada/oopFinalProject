@@ -6,7 +6,7 @@ void Creature::setPostion(const Position& posTemp) {
 	position = posTemp;
 }
 void Creature::dexterityToZero(void) {
-	dexterity = 0;
+	dexterity[0] = dexterity[1] = 0;
 }
 void Creature::shieldToZero(void) {
 	shield = 0;
