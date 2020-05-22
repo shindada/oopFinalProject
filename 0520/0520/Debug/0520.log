@@ -1,0 +1,11 @@
+﻿  Board.cpp
+c:\users\徐瑞憫\onedrive\桌面\0520\0520\board.cpp(37): warning C4018: '<': signed/unsigned 不相符
+c:\users\徐瑞憫\onedrive\桌面\0520\0520\board.cpp(52): warning C4018: '<': signed/unsigned 不相符
+  main.cpp
+c:\users\徐瑞憫\onedrive\桌面\0520\0520\main.cpp(50): warning C4018: '<': signed/unsigned 不相符
+c:\users\徐瑞憫\onedrive\桌面\0520\0520\main.cpp(58): warning C4018: '<': signed/unsigned 不相符
+c:\users\徐瑞憫\onedrive\桌面\0520\0520\main.cpp(79): warning C4018: '<': signed/unsigned 不相符
+c:\users\徐瑞憫\onedrive\桌面\0520\0520\main.cpp(84): warning C4018: '<': signed/unsigned 不相符
+c:\users\徐瑞憫\onedrive\桌面\0520\0520\main.cpp(91): warning C4018: '<': signed/unsigned 不相符
+  正在產生程式碼...
+  0520.vcxproj -> C:\Users\徐瑞憫\OneDrive\桌面\0520\Debug\0520.exe
