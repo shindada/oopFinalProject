@@ -3,22 +3,26 @@
 #include <ctime>
 #include <cstdlib>
 #include <iostream>
-//#include "Creature.h"
-#include "Func.h"
+#include <sstream>
+#include "Board.h"
 class Monster :public Creature {
 private:
-	int chooseCard;
-	static char alpha;
+	int drawCount;
 	char name;
+	int chooseCard;
+	int gameMode;
 	int status[3];//hp atk range
-	int chooseNow;
 	std::vector <MonsterCardData> holdCard;
+	static char Malpha;
 public:
-	Monster(const std::vector <MonsterData>& mD,int people);
-	void draw();//抽牌
-	void turn();
+	Monster(void);//OK
+	void initial(const MonsterData& monstDataTemp, const MonsterPlace& monstPlaceTemp, const int &gameModeTemp);//OK
+	const char& getName(void);//OK
+	void visible(void);//whether display in board//OK
+	void draw();//抽牌//OK
+	void turn();//OK
 	int attack(int atkTemp);
 	int attack(int atkTemp, int rangeTemp);
-	void move(std::string commandTemp);
-	void shuffle();//洗牌
+	void move(std::string commandTemp);//OK
+	void shuffle();//洗牌//OK
 };

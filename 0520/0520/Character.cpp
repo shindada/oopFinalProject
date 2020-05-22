@@ -1,13 +1,15 @@
 ﻿#include "Character.h"
-char Character::Halpa = 'A';
-Character::Character(void) {
-	name = Halpa;
-	Halpa++;
+char Character::Halpha = 'A';
+Character::Character(void) {//OK
+	name = Halpha;
+	Halpha++;
 	holdCard.clear();
+	this->alive = true;
 }
-void Character::initial(const CharacterData& chaDataTemp) {
+void Character::initial(const CharacterData& chaDataTemp) {//OK
 	Creature::initialHp(chaDataTemp.hp);
 	Creature::shieldToZero();
+	Creature::dexterityToZero();
 	holdCard.clear();
 	for (int i = 0; i < chaDataTemp.totalcard; i++) {
 		holdCard.push_back(chaDataTemp.card[i]);
@@ -28,10 +30,10 @@ void Character::initial(const CharacterData& chaDataTemp) {
 	}*/
 	//check end
 }
-const char& Character::getName(void) {
+const char& Character::getName(void) {//OK
 	return this->name;
 }
-void Character::getHoldCard(void) {
+void Character::getHoldCard(void) {//OK
 	std::vector <int> hand;
 	std::vector <int> discard;
 	hand.clear();
@@ -62,7 +64,7 @@ void Character::getHoldCard(void) {
 	hand.clear();
 	discard.clear();
 }
-void Character::draw() {//抽牌
+void Character::draw() {//抽牌//OK
 	std::cout << name << "'s turn: ";
 	int chooseCardInt[2];
 	int countTemp = 0;
@@ -76,7 +78,7 @@ void Character::draw() {//抽牌
 			countTemp = 1;
 		}
 		std::cin >> chooseCardInt[0] >> chooseCardInt[1];
-		if ((chooseCardInt[0] < holdCard.size()) || (chooseCardInt[0] < holdCard.size())) {
+		if ((chooseCardInt[0] < holdCard.size()) && (chooseCardInt[1] < holdCard.size())) {
 			if ((holdCard[chooseCardInt[0]].cardStatus != 0)
 				|| (holdCard[chooseCardInt[1]].cardStatus != 0)
 				|| (chooseCardInt[0] == chooseCardInt[1])) {
@@ -160,50 +162,181 @@ int Character::attack(int atkTemp, int rangeTemp) {
 	return atkTemp;
 	return 0;
 }
-void Character::move(int step) {
+void Character::spawn(void) {//OK
+	std::cout << "please enter steps: ";
+	string steps; cin >> steps;
+	Position *movement = new Position[steps.length()]; // space for movements according to keys
+	for (int i = 0; i < steps.length(); i++) {
+		switch (steps[i]) { // translates keys to movements
+		case 'W': case 'w':
+			movement[i].row = -1;
+			movement[i].col = 0;
+			break;
+		case 'S': case 's':
+			movement[i].row = 1;
+			movement[i].col = 0;
+			break;
+		case 'A': case 'a':
+			movement[i].row = 0;
+			movement[i].col = -1;
+			break;
+		case 'D': case 'd':
+			movement[i].row = 0;
+			movement[i].col = 1;
+			break;
+		case 'E': case 'e':
+			movement[i].row = 0;
+			movement[i].col = 0;
+			break;
+		}
+	}
+	setPostion(map.spawn[0]);
+	for (int i = 0; i < steps.length(); i++) {
+		Position temp = getPosition();
+		temp.row = temp.row + movement[i].row;
+		temp.col = temp.col + movement[i].col;
+		if ((board[temp.row][temp.col] == '4') || (board[temp.row][temp.col] == '5')) {
+			setPostion(temp);
+		}
+		else continue;
+	}
+	Position now = getPosition();
+	if (board[now.row][now.col] == '4') { 
+		board[now.row][now.col] = getName();
+		for (int i = 1; i < map.spawn.size();i++) {
+			if ((map.spawn[i].row == now.row) && (map.spawn[i].col == now.col)) {
+				map.spawn.erase(map.spawn.begin() + i);
+			}
+		}
+	}
+	else { // move '*' to the next position
+		board[now.row][now.col] = getName();
+		map.spawn.erase(map.spawn.begin());
+		board[map.spawn[0].row][map.spawn[0].col] = '5';
+	}
+}
+void Character::move(int step) {//OK
 	std::cout << "move: " << step << std::endl;
-	//	std::string commandTemp;
-	//	std::cin >> commandTemp;
-	//	Positionition *dir = new Positionition[pace];//代表第n步後的位置
-	//	int *canMove = new int[pace];//第n步是不是valid
-	//	int maxIndex = pace;
-	//	for (int i = 0; i <= pace; i++) {
-	//		dir[i] = direction(commandTemp[i]);
-	//		if (i == 0) {
-	//			dir[i].col += Positionition.col;
-	//			dir[i].row += Positionition.row;
-	//		}
-	//		else {
-	//			dir[i].col += dir[i - 1].col;
-	//			dir[i].row += dir[i - 1].row;
-	//		}
-	//		canMove[i] = isvalid(dir[i].row,dir[i].col);
-	//		if (canMove[i] == 2) {//maxIndex=第一個2 - 1
-	//			maxIndex = i - 1;
-	//		}
-	//	}
-	//	while ((maxIndex > 0) && (canMove[maxIndex] != 0)) {//最後一格要是0//非0->maxIndex--;
-	//		maxIndex--;
-	//	}
-	//	if (maxIndex != 0) {
-	//		Positionition = dir[maxIndex];
-	//	}
-	//	delete[] dir;
-	//	delete[] canMove;
+	std::string commandTemp;
+	bool isValid = true;
+	std::cout << "please enter steps: ";
+	do {
+		isValid = true;
+		std::cin >> commandTemp;
+		if (commandTemp.length() <= step) {
+			std::vector <Position> movement;
+			movement.push_back(Creature::getPosition());
+			//Position* movement = new Position[commandTemp.length()]; // allocate space for movements depend on keys
+			for (int i = 0; i < commandTemp.length(); i++) {
+				Position temp = movement[movement.size() - 1];
+				if ((board[temp.row][temp.col] == '0') || (board[temp.row][temp.col] == '2') || (islower(board[temp.row][temp.col]))) {
+					isValid = false;
+					break;
+				}
+				else {
+					switch (commandTemp[i]) { // translates keys to movements
+					case 'W': case 'w':
+						temp.row -= 1;
+						break;
+					case 'S': case 's':
+						temp.row += 1;
+						break;
+					case 'A': case 'a':
+						temp.col -= 1;
+						break;
+					case 'D': case 'd':
+						temp.col += 1;
+						break;
+					case 'E': case 'e':
+						break;
+					default:
+						isValid = false;
+						break;
+					}
+					if (isValid) {
+						movement.push_back(temp);
+					}
+				}
+			}
+			Position temp = movement[movement.size() - 1];
+			if ((board[temp.row][temp.col] == '2') || (islower(board[temp.row][temp.col]))) {
+				isValid = false;
+				movement.pop_back();
+			}
+			temp = movement[movement.size() - 1];
+			while ((board[temp.row][temp.col] != '1') && (board[temp.row][temp.col] != '3') && (movement.size() > 1)) {
+				isValid = false;
+				movement.pop_back();
+				temp = movement[movement.size() - 1];
+			}
+			temp = movement[movement.size() - 1];
+			//check
+			/*for (int i = 0; i < movement.size(); i++) {
+				std::cout << movement[i].row << ' ' << movement[i].col << " - ";
+			}*/
+			//check end
+			if (isValid) {
+				Position restore = getPosition(); // restore 1 to original position
+					board[restore.row][restore.col] = map.initBoard[restore.row][restore.col];
+					setPostion(temp); // update character position
+					board[temp.row][temp.col] = getName(); // update board with character's new position
+			}
+			else {
+				cout << "error move!!! Please input again: ";
+				isValid = false;
+			}
+			movement.clear();
+		}
+		else {
+			cout << "error move!!! Please input again: ";
+			isValid = false;
+		}
+	} while (isValid == false);
 }
-void Character::shuffle() {//洗牌
+void Character::shuffle() {//洗牌//OK
 	std::cout << "shuffle" << std::endl;
-	//	std::cout << "remove card: ";
-	//	int choose;
-	//	std::cin >> choose;
-	//	holdCard[choose].cardStatus == 2;
-	//	for (int i = 0; i < holdCard.size(); i++) {
-	//		if (holdCard[i].cardStatus == 1) {
-	//			holdCard[i].cardStatus = 0;
-	//		}
-	//	}
+	bool flagCanShuffle = false;
+	for (int i = 0; i < holdCard.size(); i++) {
+		if (holdCard[i].cardStatus == 1) {//dicard zone is not empty
+			flagCanShuffle = true;
+		}
+	}
+	if (flagCanShuffle) {//dicard zone is not empty
+		std::cout << "remove card: ";
+		int choose;
+		int countTemp = 0;
+		bool flag;
+		do {
+			flag = true;
+			if (countTemp > 0) {
+				std::cout << "not in dicard zone, please enter other numero:";
+			}
+			else {
+				countTemp = 1;
+			}
+			std::cin >> choose;
+			if (choose < holdCard.size()) {
+				if (holdCard[choose].cardStatus != 1) {
+					flag = false;
+				}
+			}
+			else {
+				flag = false;
+			}
+		} while (flag == false);
+
+		holdCard[choose].cardStatus = 2;//put one card in destroy
+		for (int i = 0; i < holdCard.size(); i++) {
+			if (holdCard[i].cardStatus == 1) {//other cards return in hand
+				holdCard[i].cardStatus = 0;
+			}
+		}
+	}
+	else {//dicard zone is empty
+		std::cout << "no card in dicard zone, can't shuffle" << std::endl;
+	}
 }
-void Character::rest() {
+void Character::rest() {//OK
 	Creature::heal(2);
 	shuffle();
 }

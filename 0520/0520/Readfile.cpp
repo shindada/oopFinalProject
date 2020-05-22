@@ -1,9 +1,18 @@
 ﻿#include "Readfile.h"
+#include <algorithm>
+
+int characterType;//角色種類
+int monsterType;
+int MODE;
+Board map;
 CharacterData* CharacterList;
 MonsterData* MonsterList;
-int characterType;//角色種類
-int MODE;
+
+bool compareRow(Position& first, Position& last);
+bool compareCol(Position& first, Position& last);
+
 void preInput() {
+	//read Character Data
 	string filename; cin >> filename;
 	ifstream ifs(filename);
 	if (!ifs) cout << "Fail to open the file.";
@@ -40,14 +49,16 @@ void preInput() {
 		//check end
 	}
 	ifs.close();
+	//read Character Data End
+
+	//read Monster Data
 	cin >> filename;
 	ifs.open(filename);
 	if (!ifs) cout << "Fail to open the file.";
 	else {
-		int monsterNum;
-		ifs >> monsterNum;
-		MonsterList = new MonsterData[monsterNum];
-		for (int i = 0; i < monsterNum; i++) {
+		ifs >> monsterType;
+		MonsterList = new MonsterData[monsterType];
+		for (int i = 0; i < monsterType; i++) {
 			if (i == 0) ifs >> MonsterList[0].name;
 			ifs >> MonsterList[i].normal[0] >> MonsterList[i].normal[1]
 				>> MonsterList[i].normal[2] >> MonsterList[i].elite[0] >>
@@ -72,7 +83,7 @@ void preInput() {
 		}
 
 		//check
-		/*for (int i = 0; i < monsterNum; i++) {
+		/*for (int i = 0; i < monsterType; i++) {
 			cout << MonsterList[i].name << ' ' << MonsterList[i].normal[0] << ' '
 				<< MonsterList[i].normal[1] << ' ' << MonsterList[i].normal[2] << ' '
 				<< MonsterList[i].elite[0] << ' ' << MonsterList[i].elite[1] << ' '
@@ -88,31 +99,57 @@ void preInput() {
 		//check end
 	}
 	ifs.close();
-	cin >> MODE;
+	//read Monster Data end
+	
+	cin >> MODE;//read MODE
 }
-void setUpBoard() {
+void setUpBoard() {//read Map Data
 	string filename; cin >> filename;
 	ifstream ifs(filename);
 	if (!ifs) cout << "Fail to open the file.";
 	else {
-		struct Board map;
-		int row; int col;
-		ifs >> row >> col; // read in row and column
-		map.initBoard = new int*[row]; // allocate space for map
-		for (int i = 0; i < row; i++) {
-			map.initBoard[i] = new int[col];
+		ifs >> map.rowSize >> map.colSize; // read in row and column
+		map.initBoard = new char*[map.rowSize]; // allocate space for map
+		for (int i = 0; i < map.rowSize; i++) {
+			map.initBoard[i] = new char[map.colSize];
 		}
-		for (int i = 0; i < row; i++) { // store map in initBoard
-			for (int j = 0; j < col; j++) {
+		for (int i = 0; i < map.rowSize; i++) { // store map in initBoard
+			for (int j = 0; j < map.colSize; j++) {
 				ifs >> map.initBoard[i][j];
 			}
 		}
-		for (int i = 0; i < 4; i++) { // store 4 spawns of character 
-			for (int j = 1; j >= 0; j--) {
-				ifs >> map.spawn[i][j];
+
+		//check
+		/*for (int i = 0; i < map.rowSize; i++) { // store map in initBoard
+			for (int j = 0; j < map.colSize; j++) {
+				cout << map.initBoard[i][j];
 			}
+			cout << endl;
+		}*/
+		//check end
+
+		//set spawn
+		for (int i = 0; i < 4; i++) { // store 4 spawns of character 
+			Position spawnPoint;
+			ifs >> spawnPoint.col >> spawnPoint.row;
+			map.spawn.push_back(spawnPoint);
 		}
-		int monsterNum = 0; ifs >> monsterNum; // number of monsters in the map
+		//sort spawn order
+		std::sort(map.spawn.begin(), map.spawn.end(), compareRow);
+		std::sort(map.spawn.begin(), map.spawn.end(), compareCol);
+		//sort spawn order end
+
+		//check
+		/*for (int i = 0; i < 4; i++) {
+			std::cout << map.spawn[i].row << ' ' << map.spawn[i].col << std::endl;
+		}*/
+		//check end
+
+		//set spawn end
+
+		//set monsterplace
+		int monsterNum = 0;
+		ifs >> monsterNum; // number of monsters in the map
 		for (int i = 0; i < monsterNum; i++) { // store monsters' deploy
 			struct MonsterPlace temp;
 			ifs >> temp.name >> temp.place.col >> temp.place.row;
@@ -123,5 +160,28 @@ void setUpBoard() {
 			else temp.peoNum = peoTemp[2];
 			map.deploy.push_back(temp);
 		}
+
+		//check
+		/*for (int i = 0; i < map.deploy.size(); i++) { // store monsters' deploy
+			std::cout << map.deploy[i].name << ' '
+				<< map.deploy[i].place.row << ' '
+				<< map.deploy[i].place.col << ' '
+				<< map.deploy[i].peoNum << std::endl;
+		}*/
+		//check end
+
+		//set monsterplace end
+
+	}
+}
+bool compareRow(Position& first, Position& last) {
+	return first.row < last.row;
+}
+bool compareCol(Position& first, Position& last) {
+	if (first.row == last.row) {
+		return first.col < last.col;
+	}
+	else {
+		return first.row < last.row;
 	}
 }

@@ -12,14 +12,17 @@ public:
 	int shield;
 	Position position;
 public:
+	bool alive;
+	int dexterity;
 	//void move(std::string commandTemp);
 	void initialHp(const int& hpTemp);
 	void setPostion(const Position& posTemp);
-	void shieldToZero();
-	const int& getTotalHp() const;
-	const int& getHp() const;
-	const int& getShield() const;
-	const Position& getPosition() const;
+	void dexterityToZero(void);
+	void shieldToZero(void);
+	const int& getTotalHp(void) const;
+	const int& getHp(void) const;
+	const int& getShield(void) const;
+	const Position& getPosition(void) const;
 	void heal(const int& bloodTemp);
 	void shieldPlus(const int& shieldTemp);
 };

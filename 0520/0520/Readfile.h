@@ -52,9 +52,10 @@ struct MonsterPlace {
 };
 
 struct Board {
-	int** initBoard; // Remi: 我有改名子喔
-	//int room[] = { 0,6 };//存room開始的row值//方便丟資料
-	int spawn[4][2];
+	int rowSize;
+	int colSize;
+	char** initBoard;//0:wall 1:space 2:obstacle 3:door 4:spawn other 5:spawn point
+	vector <Position> spawn;
 	vector <MonsterPlace> deploy; // monster配置
 };
 //Board Data End
@@ -65,9 +66,12 @@ void setUpBoard();
 //read data function end
 
 //global variable
-extern CharacterData* CharacterList;
-extern MonsterData* MonsterList;
 extern int characterType;//角色種類
+extern int monsterType;
 extern int characterNum;//遊戲角色個數
 extern int MODE;
+extern CharacterData* CharacterList;
+extern MonsterData* MonsterList;
+extern Board map;
+extern char** board;
 //global variable end

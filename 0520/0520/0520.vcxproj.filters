@@ -30,6 +30,9 @@
     <ClCompile Include="Readfile.cpp">
       <Filter>資源檔</Filter>
     </ClCompile>
+    <ClCompile Include="Board.cpp">
+      <Filter>資源檔</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Character.h">
@@ -38,25 +41,14 @@
     <ClInclude Include="Creature.h">
       <Filter>資源檔</Filter>
     </ClInclude>
-    <ClInclude Include="Func.h">
-      <Filter>資源檔</Filter>
-    </ClInclude>
     <ClInclude Include="Monster.h">
       <Filter>資源檔</Filter>
     </ClInclude>
     <ClInclude Include="Readfile.h">
       <Filter>資源檔</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="character1.txt">
+    <ClInclude Include="Board.h">
       <Filter>資源檔</Filter>
-    </Text>
-    <Text Include="input.txt">
-      <Filter>資源檔</Filter>
-    </Text>
-    <Text Include="monster1.txt">
-      <Filter>資源檔</Filter>
-    </Text>
+    </ClInclude>
   </ItemGroup>
 </Project>

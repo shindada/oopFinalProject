@@ -5,19 +5,22 @@ void Creature::initialHp(const int& hpTemp) {
 void Creature::setPostion(const Position& posTemp) {
 	position = posTemp;
 }
-void Creature::shieldToZero() {
+void Creature::dexterityToZero(void) {
+	dexterity = 0;
+}
+void Creature::shieldToZero(void) {
 	shield = 0;
 }
-const int& Creature::getTotalHp() const {
+const int& Creature::getTotalHp(void) const {
 	return totalHp;
 }
-const int& Creature::getHp() const {
+const int& Creature::getHp(void) const {
 	return hp;
 }
-const int& Creature::getShield() const {
+const int& Creature::getShield(void) const {
 	return shield;
 }
-const Position& Creature::getPosition() const {
+const Position& Creature::getPosition(void) const {
 	return position;
 }
 void Creature::heal(const int& bloodTemp) {
